@@ -1,0 +1,43 @@
+# syntax=docker/dockerfile:experimental
+FROM python:3.10.9-slim 
+
+# ensures that the output is sent on real-time to the terminal
+ENV PYTHONUNBUFFERED=1 \
+    # prevents python creating .pyc files
+    PYTHONDONTWRITEBYTECODE=1 \
+    \
+    PIP_DEFAULT_TIMEOUT=200 \
+    \
+    POETRY_VERSION=1.3.2 \
+    POETRY_HOME="/opt/poetryhome" \
+    POETRY_VIRTUALENVS_IN_PROJECT=true \
+    POETRY_NO_INTERACTION=1 \
+    \
+    PROJECT_PATH="/opt/fastapi_docker_helloworld" \
+    VENV_PATH="/opt/fastapi_docker_helloworld/.venv"
+
+ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+
+RUN apt update && apt install --no-install-recommends -y curl build-essential
+
+RUN curl -sSL https://install.python-poetry.org/install-poetry.py | python -
+
+WORKDIR $PROJECT_PATH
+
+COPY ./pyproject.toml ./poetry.lock ./
+RUN mkdir -p ./fastapi_docker_helloworld && touch ./fastapi_docker_helloworld/__init__.py
+
+
+RUN  poetry run pip install --upgrade pip \
+    && poetry install -n 
+
+COPY ./fastapi_docker_helloworld ./fastapi_docker_helloworld
+RUN ls ./fastapi_docker_helloworld
+
+EXPOSE 8282
+
+COPY ./docker/run.sh /opt/run.sh
+RUN chmod +x /opt/run.sh
+
+ENTRYPOINT ["/opt/run.sh"]
+

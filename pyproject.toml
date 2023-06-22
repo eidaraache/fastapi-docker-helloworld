@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "fastapi-docker-helloworld"
+version = "0.1.0"
+description = ""
+authors = ["Eid Araache <eid.araache@pmcs.de>"]
+packages = [{include = "fastapi_docker_helloworld"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.97.0"
+uvicorn = "^0.22.0"
+structlog = "^23.1.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
